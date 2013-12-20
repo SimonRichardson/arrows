@@ -1,0 +1,39 @@
+{
+  "name": "arrows",
+  "version": "0.0.1",
+  "description": "Arrows",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SimonRichardson/arrows.git"
+  },
+  "keywords": [
+    "fantasyland",
+    "list",
+    "arrows"
+  ],
+  "author": "Simon Richardson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SimonRichardson/arrows/issues"
+  },
+  "dependencies": {
+    "bounces": "0.0.x",
+    "daggy": "0.0.x",
+    "fantasy-combinators": "0.0.x"
+  },
+  "devDependencies": {
+    "grunt-cli": "0.1.9",
+    "grunt": "0.4.x",
+    "grunt-contrib-jshint": "0.6.x",
+    "grunt-contrib-nodeunit": "0.2.0",
+    "fantasy-check": "0.1.6"
+  },
+  "scripts": {
+      "test": "grunt"
+  },
+  "files": [
+      "arrows.js", 
+      "src/*.js"
+  ],
+  "main": "arrows.js"
+}
