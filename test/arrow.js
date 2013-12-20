@@ -1,13 +1,17 @@
-/*var Arrow = require('../arrows'),
+var Arrow = require('../arrows'),
+    combinators = require('fantasy-combinators'),
+
+    constant = combinators.constant,
+    identity = combinators.identity,
 
     inc = function(x) {
         return x + 1;
-    };*/
+    };
 
-var arrows = {
+exports.arrows = {
     'test': function(test) {
-       // var a = Arrow.of(constant(1)).next(Arrow.of(constant(inc))).run();
-        //console.log(a);
+        var a = Arrow.of(constant(1)).fork(Arrow.of(constant(2))).exec();
+        console.log(a);
         test.ok(true);
         test.done();
     }
