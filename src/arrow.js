@@ -7,6 +7,7 @@ var daggy = require('daggy'),
 
     compose = combinators.compose,
     constant = combinators.constant,
+    identity = combinators.identity,
 
     Arrow = daggy.tagged('run');
 
@@ -46,6 +47,33 @@ Arrow.prototype.fork = function(g) {
                 lhs.map(function(y) {
                     return Tuple2(y, x);
                 }).chain(k);
+            });
+        };
+    });
+};
+
+Arrow.prototype.or = function(g) {
+    var m = this;
+    return Arrow(function(x) {
+        return function(k) {
+            var result = Option.None;
+            m.run(x)(function(x) {
+                return result.cata({
+                    Some: identity,
+                    None: function() {
+                        result = Option.Some(x);
+                        return k(x);
+                    }
+                });
+            });
+            g.run(x)(function(x) {
+                return result.cata({
+                    Some: identity,
+                    None: function() {
+                        result = Option.Some(x);
+                        return k(x);
+                    }
+                });
             });
         };
     });

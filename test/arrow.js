@@ -10,7 +10,7 @@ var Arrow = require('../arrows'),
 
 exports.arrows = {
     'test': function(test) {
-        var a = Arrow.of(constant(1)).fork(Arrow.of(constant(2))).exec();
+        var a = Arrow.of(constant(1)).fork(Arrow.of(constant(2))).or(Arrow.of(constant(3))).exec();
         console.log(a);
         test.ok(true);
         test.done();
