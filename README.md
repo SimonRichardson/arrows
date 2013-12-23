@@ -13,6 +13,9 @@ Arrows is in a very early stage, so there are inherently some
 things missing! For example:
 
 * Not many tests - no checking against laws / axioms
-* Fork is limited to 2 items together
 * Operators i.e. `['>>>']` for next
 * exec...
+
+### Reading material
+
+* [Understanding Arrows](http://en.wikibooks.org/wiki/Haskell/Understanding_arrows)
