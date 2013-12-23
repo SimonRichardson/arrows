@@ -21,6 +21,9 @@ Arrow.lift = function(f) {
         };
     });
 };
+Arrow.identity = function(a) {
+    return Arrow.lift(identity);
+};
 
 // Methods
 Arrow.prototype.chain = function(f) {
@@ -50,7 +53,6 @@ Arrow.prototype.map = function(f) {
 Arrow.prototype.next = function(g) {
     return this.chain(constant(g));
 };
-
 Arrow.prototype.fork = function(g) {
     var m = this;
     return Arrow(function(x) {
@@ -72,7 +74,6 @@ Arrow.prototype.fork = function(g) {
         };
     });
 };
-
 Arrow.prototype.or = function(g) {
     var m = this;
     return Arrow(function(x) {
@@ -97,6 +98,21 @@ Arrow.prototype.or = function(g) {
                 });
             });
         };
+    });
+};
+Arrow.prototype.first = function(f) {
+    return this.map(function(x) {
+        return Tuple2(f(x._1), x._2);
+    });
+};
+Arrow.prototype.second = function(f) {
+    return this.map(function(x) {
+        return Tuple2(x._1, f(x._2));
+    });
+};
+Arrow.prototype.swap = function() {
+    return this.map(function(x) {
+        return Tuple2(x._2, x._1);
     });
 };
 

@@ -3,7 +3,11 @@ var λ = require('fantasy-check/src/adapters/nodeunit'),
     functor = require('fantasy-check/src/laws/functor'),
     monad = require('fantasy-check/src/laws/monad'),
     
-    Arrow = require('../arrows');
+    Arrow = require('../arrows'),
+
+    inc = function(x) {
+        return x + 1;
+    };
 
 function run(a) {
     return a.exec();
@@ -28,4 +32,11 @@ exports.arrows = {
     'Left Identity (Monad)': monad.leftIdentity(λ)(Arrow, run),
     'Right Identity (Monad)': monad.rightIdentity(λ)(Arrow, run),
     'Associativity (Monad)': monad.associativity(λ)(Arrow, run),
+
+    // Manual
+    'test': function(test) {
+        var a = Arrow.of(1).fork(Arrow.of(2)).exec();
+        test.ok(a.x._1 === 1);
+        test.done();
+    }
 };
