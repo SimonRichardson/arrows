@@ -1,18 +1,31 @@
-var Arrow = require('../arrows'),
-    combinators = require('fantasy-combinators'),
+var λ = require('fantasy-check/src/adapters/nodeunit'),
+    applicative = require('fantasy-check/src/laws/applicative'),
+    functor = require('fantasy-check/src/laws/functor'),
+    monad = require('fantasy-check/src/laws/monad'),
+    
+    Arrow = require('../arrows');
 
-    constant = combinators.constant,
-    identity = combinators.identity,
-
-    inc = function(x) {
-        return x + 1;
-    };
+function run(a) {
+    return a.exec();
+}
 
 exports.arrows = {
-    'test': function(test) {
-        var a = Arrow.of(constant(1)).fork(Arrow.of(constant(2))).or(Arrow.of(constant(3))).exec();
-        console.log(a);
-        test.ok(true);
-        test.done();
-    }
+
+    // Applicative Functor tests
+    'All (Applicative)': applicative.laws(λ)(Arrow, run),
+    'Identity (Applicative)': applicative.identity(λ)(Arrow, run),
+    'Composition (Applicative)': applicative.composition(λ)(Arrow, run),
+    'Homomorphism (Applicative)': applicative.homomorphism(λ)(Arrow, run),
+    'Interchange (Applicative)': applicative.interchange(λ)(Arrow, run),
+
+    // Functor tests
+    'All (Functor)': functor.laws(λ)(Arrow.of, run),
+    'Identity (Functor)': functor.identity(λ)(Arrow.of, run),
+    'Composition (Functor)': functor.composition(λ)(Arrow.of, run),
+
+    // Monad tests
+    'All (Monad)': monad.laws(λ)(Arrow, run),
+    'Left Identity (Monad)': monad.leftIdentity(λ)(Arrow, run),
+    'Right Identity (Monad)': monad.rightIdentity(λ)(Arrow, run),
+    'Associativity (Monad)': monad.associativity(λ)(Arrow, run),
 };

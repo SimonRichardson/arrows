@@ -11,7 +11,10 @@ var daggy = require('daggy'),
 
     Arrow = daggy.tagged('run');
 
-Arrow.of = function(f) {
+Arrow.of = function(a) {
+    return Arrow.lift(constant(a));
+};
+Arrow.lift = function(f) {
     return Arrow(function(x) {
         return function(k) {
             return compose(k)(f)(x);
@@ -19,15 +22,33 @@ Arrow.of = function(f) {
     });
 };
 
-Arrow.prototype.next = function(g) {
+// Methods
+Arrow.prototype.chain = function(f) {
     var m = this;
     return Arrow(function(x) {
         return function(k) {
             return m.run(x)(function(x) {
-                return g.run(x)(k);
+                return f(x).run(x)(k);
             });
         };
     });
+};
+
+// Derived
+Arrow.prototype.ap = function(a) {
+    return this.chain(function(f) {
+        return a.map(f);
+    });
+};
+Arrow.prototype.map = function(f) {
+    return this.chain(function(a) {
+        return Arrow.of(f(a));
+    });
+};
+
+// Common
+Arrow.prototype.next = function(g) {
+    return this.chain(constant(g));
 };
 
 Arrow.prototype.fork = function(g) {
