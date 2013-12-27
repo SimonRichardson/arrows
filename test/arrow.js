@@ -2,11 +2,19 @@ var λ = require('fantasy-check/src/adapters/nodeunit'),
     applicative = require('fantasy-check/src/laws/applicative'),
     functor = require('fantasy-check/src/laws/functor'),
     monad = require('fantasy-check/src/laws/monad'),
+
+    tuples = require('fantasy-tuples'),
+    Tuple2 = tuples.Tuple2,
     
     Arrow = require('../arrows'),
 
     inc = function(x) {
         return x + 1;
+    },
+    mul = function(n) {
+        return function(x) {
+            return x * n;
+        };
     };
 
 function run(a) {
@@ -35,8 +43,13 @@ exports.arrows = {
 
     // Manual
     'test': function(test) {
-        var a = Arrow.of(1).fork(Arrow.of(2)).exec();
-        test.ok(a.x._1 === 1);
+        console.log('\n--------------------');
+        var a = Arrow.of(1);
+        var b = a.fork(a);
+        var c = b.next(Arrow.lift(inc).and(Arrow.lift(mul(3))));
+        var xx = c.exec();
+        console.log(b.exec(), xx);
+        test.ok(true);
         test.done();
     }
 };

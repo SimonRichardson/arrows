@@ -57,15 +57,23 @@ Arrow.prototype.fork = function(g) {
     var m = this;
     return Arrow(function(x) {
         return function(k) {
+            return m.and(g).run(Tuple2(x, x))(k);
+        };
+    });
+};
+Arrow.prototype.and = function(g) {
+    var m = this;
+    return Arrow(function(x) {
+        return function(k) {
             var lhs = Option.None,
                 rhs = Option.None;
-            m.run(x)(function(x) {
+            m.run(x._1)(function(x) {
                 lhs = Option.Some(x);
                 rhs.map(function(y) {
                     return Tuple2(x, y);
                 }).chain(k);
             });
-            g.run(x)(function(x) {
+            g.run(x._2)(function(x) {
                 rhs = Option.Some(x);
                 lhs.map(function(y) {
                     return Tuple2(y, x);
@@ -73,11 +81,13 @@ Arrow.prototype.fork = function(g) {
             });
         };
     });
+
 };
 Arrow.prototype.or = function(g) {
     var m = this;
     return Arrow(function(x) {
         return function(k) {
+            // Horrid State
             var result = Option.None;
             m.run(x)(function(x) {
                 return result.cata({
