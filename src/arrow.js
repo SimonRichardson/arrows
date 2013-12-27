@@ -14,6 +14,10 @@ var daggy = require('daggy'),
 Arrow.of = function(a) {
     return Arrow.lift(constant(a));
 };
+Arrow.empty = function() {
+    return Arrow.lift(function() {
+    });
+};
 Arrow.lift = function(f) {
     return Arrow(function(x) {
         return function(k) {
@@ -65,6 +69,7 @@ Arrow.prototype.and = function(g) {
     var m = this;
     return Arrow(function(x) {
         return function(k) {
+            // Horrid State
             var lhs = Option.None,
                 rhs = Option.None;
             m.run(x._1)(function(x) {
@@ -124,6 +129,9 @@ Arrow.prototype.swap = function() {
     return this.map(function(x) {
         return Tuple2(x._2, x._1);
     });
+};
+Arrow.prototype.loop = function() {
+
 };
 
 // Execute

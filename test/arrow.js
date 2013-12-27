@@ -1,21 +1,11 @@
-var λ = require('fantasy-check/src/adapters/nodeunit'),
-    applicative = require('fantasy-check/src/laws/applicative'),
-    functor = require('fantasy-check/src/laws/functor'),
-    monad = require('fantasy-check/src/laws/monad'),
-
-    tuples = require('fantasy-tuples'),
-    Tuple2 = tuples.Tuple2,
+var λ = require('./lib/test'),
     
-    Arrow = require('../arrows'),
+    applicative = λ.applicative,
+    functor = λ.functor,
+    monad = λ.monad,
 
-    inc = function(x) {
-        return x + 1;
-    },
-    mul = function(n) {
-        return function(x) {
-            return x * n;
-        };
-    };
+    Arrow = λ.Arrow,
+    Tuple2 = λ.Tuple2;
 
 function run(a) {
     return a.exec();
@@ -42,14 +32,12 @@ exports.arrows = {
     'Associativity (Monad)': monad.associativity(λ)(Arrow, run),
 
     // Manual
-    'test': function(test) {
-        console.log('\n--------------------');
-        var a = Arrow.of(1);
-        var b = a.fork(a);
-        var c = b.next(Arrow.lift(inc).and(Arrow.lift(mul(3))));
-        var xx = c.exec();
-        console.log(b.exec(), xx);
-        test.ok(true);
-        test.done();
-    }
+    'when calling fork, then next and then finally and should be correct value': λ.check(
+        function(a, b) {
+            var x = Arrow.of(a).fork(Arrow.of(b)),
+                y = x.next(Arrow.lift(λ.inc).and(Arrow.lift(λ.mul(2))));
+            return λ.equals(y.exec().x, Tuple2(a + 1, b * 2));
+        },
+        [Number, Number]
+    )
 };
