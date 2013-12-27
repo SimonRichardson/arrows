@@ -39,5 +39,40 @@ exports.arrows = {
             return λ.equals(y.exec().x, Tuple2(a + 1, b * 2));
         },
         [Number, Number]
+    ),
+    'when calling fork should be correct value': λ.check(
+        function(a, b) {
+            var x = Arrow.of(a).fork(Arrow.of(b));
+            return λ.equals(x.exec().x, Tuple2(a, b));
+        },
+        [Number, Number]
+    ),
+    'when calling next should be correct value': λ.check(
+        function(a, b) {
+            var x = Arrow.of(a).next(Arrow.of(b));
+            return x.exec().x === b;
+        },
+        [Number, Number]
+    ),
+    'when calling fork then first should be correct value': λ.check(
+        function(a, b) {
+            var x = Arrow.of(a).fork(Arrow.of(b)).first(λ.inc);
+            return λ.equals(x.exec().x, Tuple2(a + 1, b));
+        },
+        [Number, Number]
+    ),
+    'when calling fork then second should be correct value': λ.check(
+        function(a, b) {
+            var x = Arrow.of(a).fork(Arrow.of(b)).second(λ.inc);
+            return λ.equals(x.exec().x, Tuple2(a, b + 1));
+        },
+        [Number, Number]
+    ),
+    'when calling fork then swap should be correct value': λ.check(
+        function(a, b) {
+            var x = Arrow.of(a).fork(Arrow.of(b)).swap();
+            return λ.equals(x.exec().x, Tuple2(b, a));
+        },
+        [Number, Number]
     )
 };
