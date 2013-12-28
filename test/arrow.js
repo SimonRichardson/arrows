@@ -75,10 +75,14 @@ exports.arrows = {
         },
         [Number, Number]
     ),
-    'test': function(test) {
-        var a = Arrow.of(1).delay(1).next(Arrow.lift(function(x) {
-            test.ok(x === 1);
-            test.done();
-        })).exec();
-    }
+    'when calling wait should be correct value': λ.async(
+        function(resolve) {
+            return function(a) {
+                Arrow.of(1).wait(1).next(Arrow.lift(function(x) {
+                    resolve(x === 1);
+                })).exec();
+            };
+        },
+        [Number]
+    )
 };

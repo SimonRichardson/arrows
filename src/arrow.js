@@ -131,7 +131,7 @@ Arrow.prototype.swap = function() {
     });
 };
 
-Arrow.prototype.delay = function(n) {
+Arrow.prototype.wait = function(n) {
     var m = this;
     return Arrow(function(x) {
         return function(k) {
