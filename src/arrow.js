@@ -130,9 +130,25 @@ Arrow.prototype.swap = function() {
         return Tuple2(x._2, x._1);
     });
 };
-Arrow.prototype.loop = function() {
 
+Arrow.prototype.delay = function(n) {
+    var m = this;
+    return Arrow(function(x) {
+        return function(k) {
+            setTimeout(function() {
+                m.run(x)(k);
+            }, n);
+        };
+    });
 };
+Arrow.prototype.loop = function() {
+    var m = this,
+        a = Arrow.lift(function rec(x) {
+            m.run(x)(rec);
+        });
+    return a;
+};
+
 
 // Execute
 Arrow.prototype.exec = function(x) {

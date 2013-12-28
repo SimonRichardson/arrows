@@ -74,5 +74,11 @@ exports.arrows = {
             return λ.equals(x.exec().x, Tuple2(b, a));
         },
         [Number, Number]
-    )
+    ),
+    'test': function(test) {
+        var a = Arrow.of(1).delay(1).next(Arrow.lift(function(x) {
+            test.ok(x === 1);
+            test.done();
+        })).exec();
+    }
 };
