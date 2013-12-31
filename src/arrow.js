@@ -54,6 +54,7 @@ Arrow.prototype.map = function(f) {
 };
 
 // Common
+Arrow.prototype.cancel = function() {};
 Arrow.prototype.next = function(g) {
     return this.chain(constant(g));
 };
@@ -93,25 +94,27 @@ Arrow.prototype.or = function(g) {
     return Arrow(function(x) {
         return function(k) {
             // Horrid State
-            var result = Option.None;
-            m.run(x)(function(x) {
-                return result.cata({
-                    Some: identity,
-                    None: function() {
-                        result = Option.Some(x);
-                        return k(x);
-                    }
+            var result = Option.None,
+                a = m.run(x)(function(x) {
+                    b.cancel();
+                    return result.cata({
+                        Some: identity,
+                        None: function() {
+                            result = Option.Some(x);
+                            return k(x);
+                        }
+                    });
+                }),
+                b = g.run(x)(function(x) {
+                    a.cancel();
+                    return result.cata({
+                        Some: identity,
+                        None: function() {
+                            result = Option.Some(x);
+                            return k(x);
+                        }
+                    });
                 });
-            });
-            g.run(x)(function(x) {
-                return result.cata({
-                    Some: identity,
-                    None: function() {
-                        result = Option.Some(x);
-                        return k(x);
-                    }
-                });
-            });
         };
     });
 };
