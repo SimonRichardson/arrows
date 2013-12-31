@@ -84,5 +84,18 @@ exports.arrows = {
             };
         },
         [Number]
+    ),
+    'when calling wait then cancel should not call method': λ.async(
+        function(resolve) {
+            return function(a) {
+                var x = Arrow.of(1).wait(1);
+                x.next(Arrow.lift(function(x) {
+                    resolve(false);
+                })).exec();
+                x.cancel();
+                setTimeout(resolve, 2, true);
+            };
+        },
+        [Number]
     )
 };

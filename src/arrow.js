@@ -132,14 +132,19 @@ Arrow.prototype.swap = function() {
 };
 
 Arrow.prototype.wait = function(n) {
-    var m = this;
-    return Arrow(function(x) {
-        return function(k) {
-            setTimeout(function() {
-                m.run(x)(k);
-            }, n);
-        };
-    });
+    var m = this,
+        a = Arrow(function(x) {
+            return function(k) {
+                id = setTimeout(function() {
+                    m.run(x)(k);
+                }, n);
+            };
+        }),
+        id;
+    a.cancel = function() {
+        clearTimeout(id);
+    };
+    return a;
 };
 Arrow.prototype.loop = function() {
     var m = this,
