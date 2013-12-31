@@ -32,7 +32,37 @@ var λ = require('fantasy-check/src/adapters/nodeunit'),
         return function(x) {
             return x * n;
         };
+    },
+
+    MockEvent = function(t, v) {
+        this.type = t;
+        this.value = v;
+    },
+    MockObject = function() {
+        var listeners = Seq.empty();
+        this.addEventListener = function(e, f, c) {
+            listeners = listeners.concat(Seq.of({
+                event: e,
+                func: f,
+                capture: c
+            }));
+        };
+        this.removeEventListener = function(e, f) {
+            listeners = listeners.filter(function(a) {
+                return a.event === e.type && a.func === f;
+            });
+        };
+        this.dispatchEvent = function(e) {
+            var filtered = listeners.filter(function(a) {
+                return a.event === e.type;
+            });
+            filtered.map(function(a) {
+                a.func(e);
+            });
+        };
     };
+
+MockEvent.Event = 'MockEvent.Event';
 
 λ = λ
     .property('equals', equals)
@@ -44,7 +74,10 @@ var λ = require('fantasy-check/src/adapters/nodeunit'),
 
     .property('applicative', applicative)
     .property('functor', functor)
-    .property('monad', monad);
+    .property('monad', monad)
+
+    .property('MockEvent', MockEvent)
+    .property('MockObject', MockObject);
 
 if (typeof module != 'undefined')
     module.exports = λ;

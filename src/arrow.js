@@ -146,6 +146,27 @@ Arrow.prototype.wait = function(n) {
     };
     return a;
 };
+Arrow.prototype.event = function(o) {
+    var m = this;
+    return function(e) {
+        var f = function(k) {
+                return function(e) {
+                    m.run(e)(k);
+                };
+            },
+            a = Arrow(function(x) {
+                return function(k) {
+                    id = f(k);
+                    o.addEventListener(e, id, true);
+                };
+            }),
+            id;
+        a.cancel = function() {
+            o.removeEventListener(e, id);
+        };
+        return a;
+    };
+};
 Arrow.prototype.loop = function() {
     var m = this,
         a = Arrow.lift(function rec(x) {
@@ -153,7 +174,6 @@ Arrow.prototype.loop = function() {
         });
     return a;
 };
-
 
 // Execute
 Arrow.prototype.exec = function(x) {

@@ -45,14 +45,14 @@ exports.arrows = {
             var x = Arrow.of(a).fork(Arrow.of(b));
             return λ.equals(x.exec().x, Tuple2(a, b));
         },
-        [Number, Number]
+        [λ.AnyVal, λ.AnyVal]
     ),
     'when calling next should be correct value': λ.check(
         function(a, b) {
             var x = Arrow.of(a).next(Arrow.of(b));
             return x.exec().x === b;
         },
-        [Number, Number]
+        [λ.AnyVal, λ.AnyVal]
     ),
     'when calling fork then first should be correct value': λ.check(
         function(a, b) {
@@ -73,22 +73,22 @@ exports.arrows = {
             var x = Arrow.of(a).fork(Arrow.of(b)).swap();
             return λ.equals(x.exec().x, Tuple2(b, a));
         },
-        [Number, Number]
+        [λ.AnyVal, λ.AnyVal]
     ),
     'when calling wait should be correct value': λ.async(
         function(resolve) {
             return function(a) {
-                Arrow.of(1).wait(1).next(Arrow.lift(function(x) {
-                    resolve(x === 1);
+                Arrow.of(a).wait(1).next(Arrow.lift(function(x) {
+                    resolve(x === a);
                 })).exec();
             };
         },
-        [Number]
+        [λ.AnyVal]
     ),
     'when calling wait then cancel should not call method': λ.async(
         function(resolve) {
             return function(a) {
-                var x = Arrow.of(1).wait(1);
+                var x = Arrow.of(a).wait(1);
                 x.next(Arrow.lift(function(x) {
                     resolve(false);
                 })).exec();
@@ -96,6 +96,37 @@ exports.arrows = {
                 setTimeout(resolve, 2, true);
             };
         },
-        [Number]
+        [λ.AnyVal]
+    ),
+    'when calling event should be correct value': λ.async(
+        function(resolve) {
+            return function(a) {
+                var mockObject = new λ.MockObject(),
+                    mockEvent = new λ.MockEvent(λ.MockEvent.Event, 1);
+
+                Arrow.of(a).event(mockObject)(λ.MockEvent.Event).next(Arrow.lift(function(x) {
+                    resolve(x === a);
+                })).exec();
+                mockObject.dispatchEvent(mockEvent);
+            };
+        },
+        [λ.AnyVal]
+    ),
+    'when calling event then cancel should not call method': λ.async(
+        function(resolve) {
+            return function(a) {
+                var mockObject = new λ.MockObject(),
+                    mockEvent = new λ.MockEvent(λ.MockEvent.Event, 1),
+
+                    x = Arrow.of(a).event(mockObject)(λ.MockEvent.Event);
+                    x.next(Arrow.lift(function(x) {
+                        resolve(false);
+                    })).exec();
+                x.cancel();
+                mockObject.dispatchEvent(mockEvent);
+                resolve(true);
+            };
+        },
+        [λ.AnyVal]
     )
 };
